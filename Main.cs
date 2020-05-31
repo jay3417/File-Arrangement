@@ -43,11 +43,5 @@ namespace FileArrangement
         {
             where.Process();
         }
-
-        //Calcel the copy operation
-        private void btnCancel_Click(object sender, EventArgs e)
-        {
-            where.CancelProcess();
-        }
     }
 }

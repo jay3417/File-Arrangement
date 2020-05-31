@@ -15,7 +15,6 @@ namespace FileArrangement
         public int filecount { get; set; }
         public int targetcount { get; set; }
         private int copiedFiles { get; set; }
-
         public ucWhere()
         {
             InitializeComponent();
@@ -49,23 +48,28 @@ namespace FileArrangement
             }
         }
 
-        //The event cancels the process operation
-        public void CancelProcess()
-        {
-            //Do Nothings
-        }
-
         //Start the process operations and calls a task run method to move the files
         public async void Process()
         {
             try
             {
+                if (string.IsNullOrEmpty(txtSource.Text) || string.IsNullOrEmpty(txtDestination.Text))
+                {
+                    MessageBox.Show("Source or Destination Path can't be empty", "Message", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    clearApp();
+                    return;
+                }
+
                 await Task.Run(() => CopyTo(sourcePath, targetPath, selectedDate, filecount, new Progress<int>(updateBar)));
                 clearApp();
             }
+            catch (OperationCanceledException oce)
+            {
+                MessageBox.Show(oce.Message, "Message", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(ex.Message, "Message", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
         }
@@ -80,7 +84,7 @@ namespace FileArrangement
             {
                 if (Directory.Exists(source))
                 {
-                    while (j < fcount)
+                    while (progressBar1.Value < 100)
                     {
                         //Move the files from source to directory
                         foreach (string cFile in files)
@@ -89,11 +93,9 @@ namespace FileArrangement
                             DateTime fDt = Convert.ToDateTime(File.GetLastWriteTime(Path.Combine(source, filename)));
                             DateTime cDt = Convert.ToDateTime(cDate);
 
-                            if (cDt == Convert.ToDateTime("01/01/0001"))
-                                cDt = System.DateTime.Today;
+                            if (cDt == Convert.ToDateTime("01/01/0001")) cDt = System.DateTime.Today;
 
-                            if (fDt.Date < cDt.Date)
-                                File.Move(Path.Combine(source, filename), Path.Combine(dest, filename));
+                            if (fDt.Date < cDt.Date) File.Move(Path.Combine(source, filename), Path.Combine(dest, filename));
 
                             if (File.Exists(Path.Combine(dest, filename)))
                             {
@@ -103,12 +105,10 @@ namespace FileArrangement
 
                                 //Update the status bar
                                 Thread.Sleep(2000);
-                                if (progressCallback != null)
-                                    progressCallback.Report(j * 100 / fcount);
+                                if (progressCallback != null) progressCallback.Report(j * 100 / fcount);
                             }
                         }
-                        if ((j * 100 / fcount) == 100)
-                            MessageBox.Show(fcount + " file(s) successfully movied!", "Message", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        if ((j * 100 / fcount) == 100) MessageBox.Show(fcount + " file(s) successfully movied!", "Message", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                 }
             }
@@ -124,7 +124,7 @@ namespace FileArrangement
         {
             try
             {
-                this.Invoke((Action)delegate ()
+                this.BeginInvoke((Action)delegate ()
                 {
                     progressBar1.Value = bar;
                     lblProgressPercent.Text = string.Format("{0}%", bar.ToString());

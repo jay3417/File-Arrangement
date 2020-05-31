@@ -28,11 +28,11 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMain));
             this.panel1 = new System.Windows.Forms.Panel();
             this.btnCopy = new System.Windows.Forms.Button();
             this.pnlMain = new System.Windows.Forms.Panel();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.btnCancel = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.pnlMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -41,7 +41,6 @@
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.btnCancel);
             this.panel1.Controls.Add(this.btnCopy);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel1.Location = new System.Drawing.Point(0, 307);
@@ -83,18 +82,6 @@
             this.splitContainer1.SplitterDistance = 75;
             this.splitContainer1.TabIndex = 0;
             // 
-            // btnCancel
-            // 
-            this.btnCancel.Dock = System.Windows.Forms.DockStyle.Left;
-            this.btnCancel.Location = new System.Drawing.Point(0, 0);
-            this.btnCancel.Margin = new System.Windows.Forms.Padding(2);
-            this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(50, 23);
-            this.btnCancel.TabIndex = 1;
-            this.btnCancel.Text = "Cancel";
-            this.btnCancel.UseVisualStyleBackColor = true;
-            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
-            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -102,6 +89,7 @@
             this.ClientSize = new System.Drawing.Size(524, 330);
             this.Controls.Add(this.pnlMain);
             this.Controls.Add(this.panel1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "frmMain";
             this.Text = "File Arrange";
             this.Load += new System.EventHandler(this.frmMain_Load);
@@ -118,7 +106,6 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Panel pnlMain;
         private System.Windows.Forms.SplitContainer splitContainer1;
-        private System.Windows.Forms.Button btnCancel;
         public System.Windows.Forms.Button btnCopy;
     }
 }
