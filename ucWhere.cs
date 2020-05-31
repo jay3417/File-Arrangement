@@ -15,6 +15,7 @@ namespace FileArrangement
         public int filecount { get; set; }
         public int targetcount { get; set; }
         private int copiedFiles { get; set; }
+
         public ucWhere()
         {
             InitializeComponent();
@@ -53,13 +54,21 @@ namespace FileArrangement
         {
             try
             {
+                //Verify if the source and destination text boxes are null or empty
                 if (string.IsNullOrEmpty(txtSource.Text) || string.IsNullOrEmpty(txtDestination.Text))
                 {
-                    MessageBox.Show("Source or Destination Path can't be empty", "Message", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    clearApp();
+                    MessageBox.Show("Source or Destination path can't be empty", "Message", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
 
+                //Verify if the source count is greater than zero, if not throw an error.
+                if (lblSourceNo.Text == Convert.ToString(0))
+                {
+                    MessageBox.Show("There are no file(s) in source to move", "Message", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                //Run the process
                 await Task.Run(() => CopyTo(sourcePath, targetPath, selectedDate, filecount, new Progress<int>(updateBar)));
                 clearApp();
             }
@@ -181,8 +190,7 @@ namespace FileArrangement
                 if (fDt.Date < cDt.Date)
                     filecount++;
             }
-            //Assign new file count to label
-            lblSourceNo.Text = filecount.ToString();
+            //Assign the file count to source label
             lblSourceNo.Text = filecount.ToString();
         }
 
