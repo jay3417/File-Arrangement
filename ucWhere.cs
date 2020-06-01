@@ -19,6 +19,7 @@ namespace FileArrangement
         public ucWhere()
         {
             InitializeComponent();
+            monthCalendar1.Enabled = false;
         }
 
         //Source Directory
@@ -173,25 +174,38 @@ namespace FileArrangement
         private void monthCalendar1_DateSelected(object sender, DateRangeEventArgs e)
         {
             selectedDate = e.Start.ToShortDateString();
+            dateFilecountAdjuster(selectedDate);
+        }
 
-            string[] files = Directory.GetFiles(sourcePath, "*", SearchOption.TopDirectoryOnly);
-            filecount = new int();
-
-            //Get the file count based on calendar date selection
-            foreach (string cFile in files)
+        //Allows the user to select a date where file count criteria would change.
+        private void dateFilecountAdjuster(string dateSelected)
+        {
+            try
             {
-                string filename = Path.GetFileName(cFile);
-                DateTime fDt = Convert.ToDateTime(File.GetLastWriteTime(Path.Combine(sourcePath, filename)));
-                DateTime cDt = Convert.ToDateTime(selectedDate);
+                filecount = new int();
+                string[] files = Directory.GetFiles(sourcePath, "*", SearchOption.TopDirectoryOnly);
 
-                if (cDt == Convert.ToDateTime("01/01/0001"))
-                    cDt = System.DateTime.Today;
+                //Get the file count based on calendar date selection
+                foreach (string cFile in files)
+                {
+                    string filename = Path.GetFileName(cFile);
+                    DateTime fDt = Convert.ToDateTime(File.GetLastWriteTime(Path.Combine(sourcePath, filename)));
+                    DateTime cDt = Convert.ToDateTime(dateSelected);
 
-                if (fDt.Date < cDt.Date)
-                    filecount++;
+                    if (cDt == Convert.ToDateTime("01/01/0001"))
+                        cDt = System.DateTime.Today;
+
+                    if (fDt.Date < cDt.Date)
+                        filecount++;
+                }
+                //Assign the file count to source label
+                lblSourceNo.Text = filecount.ToString();
             }
-            //Assign the file count to source label
-            lblSourceNo.Text = filecount.ToString();
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
         }
 
         //Get the source file count in folder
@@ -204,6 +218,7 @@ namespace FileArrangement
                 sourcePath = txtSource.Text;
                 filecount = (from file in Directory.EnumerateFiles(sourcePath, "*", SearchOption.TopDirectoryOnly) select file).Count();
                 lblSourceNo.Text = filecount.ToString();
+                monthCalendar1.Enabled = true;
             }
         }
 
