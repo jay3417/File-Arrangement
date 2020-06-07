@@ -3,33 +3,33 @@ using System.Windows.Forms;
 
 namespace FileArrangement
 {
-    public partial class frmMain : Form
+    public partial class frmDelete : Form
     {
-        private enum TLFormType { where };
+        private enum TLFormType { uDelete };
         TLFormType currentForm;
-        private ucWhere where;
+        private ucDelete uDelete;
 
-        public frmMain()
+        public frmDelete()
         {
             InitializeComponent();
         }
 
-        private void frmMain_Load(object sender, EventArgs e)
+        private void frmDelete_Load(object sender, EventArgs e)
         {
-            LoadWhere();
+            LoadDelete();
         }
 
-        private void LoadWhere()
+        private void LoadDelete()
         {
-            if (where == null)
-                where = new ucWhere();
+            if (uDelete == null)
+                uDelete = new ucDelete();
             SetSinglePanel();
             splitContainer1.Panel1.Controls.Clear();
             splitContainer1.Panel2.Controls.Clear();
-            splitContainer1.Panel1.Controls.Add(where);
-            where.Dock = DockStyle.Fill;
-            where.Visible = true;
-            currentForm = TLFormType.where;
+            splitContainer1.Panel1.Controls.Add(uDelete);
+            uDelete.Dock = DockStyle.Fill;
+            uDelete.Visible = true;
+            currentForm = TLFormType.uDelete;
         }
 
         private void SetSinglePanel()
@@ -38,13 +38,11 @@ namespace FileArrangement
             splitContainer1.Panel2Collapsed = true;
         }
 
-        //Move file(s) from source to target directory
-        private void btnCopy_Click(object sender, EventArgs e)
+        private void btnDelete_Click(object sender, EventArgs e)
         {
-            where.Process();
+            uDelete.Process();
         }
 
-        //Go back to home page
         private void btnBack_Click(object sender, EventArgs e)
         {
             this.Hide();
@@ -52,10 +50,10 @@ namespace FileArrangement
             what.ShowDialog();
         }
 
-        private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
+        private void frmDelete_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (this.DialogResult == DialogResult.Cancel)
-                switch (MessageBox.Show(this,"Do you want to close the application...?", "Message", MessageBoxButtons.YesNo, MessageBoxIcon.Question))
+                switch (MessageBox.Show(this, "Do you want to close the application...?", "Message", MessageBoxButtons.YesNo, MessageBoxIcon.Question))
                 {
                     case DialogResult.No:
                         e.Cancel = true;

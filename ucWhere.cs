@@ -4,6 +4,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Security.Permissions;
 
 namespace FileArrangement
 {
@@ -20,6 +21,7 @@ namespace FileArrangement
         {
             InitializeComponent();
             monthCalendar1.Enabled = false;
+            lblDate.Text = System.DateTime.Today.ToShortDateString();
         }
 
         //Source Directory
@@ -105,16 +107,29 @@ namespace FileArrangement
 
                             if (cDt == Convert.ToDateTime("01/01/0001")) cDt = System.DateTime.Today;
 
-                            if (fDt.Date < cDt.Date) File.Move(Path.Combine(source, filename), Path.Combine(dest, filename));
-
-                            if (File.Exists(Path.Combine(dest, filename)))
+                            if (fDt.Date < cDt.Date && !File.Exists(Path.Combine(dest, filename)))
                             {
+                                File.Move(Path.Combine(source, filename), Path.Combine(dest, filename));
+
                                 //increment file count in dest
                                 j++;
                                 copiedFiles = j;
 
                                 //Update the status bar
-                                Thread.Sleep(2000);
+                                Thread.Sleep(10);
+                                if (progressCallback != null) progressCallback.Report(j * 100 / fcount);
+                            }
+                            else if (fDt.Date < cDt.Date && File.Exists(Path.Combine(dest, filename)))
+                            {
+                                File.Delete(Path.Combine(dest, filename));
+                                File.Move(Path.Combine(source, filename), Path.Combine(dest, filename));
+
+                                //increment file count in dest
+                                j++;
+                                copiedFiles = j;
+
+                                //Update the status bar
+                                Thread.Sleep(10);
                                 if (progressCallback != null) progressCallback.Report(j * 100 / fcount);
                             }
                         }
@@ -174,6 +189,7 @@ namespace FileArrangement
         private void monthCalendar1_DateSelected(object sender, DateRangeEventArgs e)
         {
             selectedDate = e.Start.ToShortDateString();
+            lblDate.Text = selectedDate;
             dateFilecountAdjuster(selectedDate);
         }
 
@@ -211,27 +227,43 @@ namespace FileArrangement
         //Get the source file count in folder
         private void txtSource_TextChanged(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(txtSource.Text))
-                sourcePath = null;
-            else
+            try
             {
-                sourcePath = txtSource.Text;
-                filecount = (from file in Directory.EnumerateFiles(sourcePath, "*", SearchOption.TopDirectoryOnly) select file).Count();
-                lblSourceNo.Text = filecount.ToString();
-                monthCalendar1.Enabled = true;
+                if (string.IsNullOrEmpty(txtSource.Text))
+                    sourcePath = null;
+                else
+                {
+                    sourcePath = txtSource.Text;
+                    filecount = (from file in Directory.EnumerateFiles(sourcePath, "*", SearchOption.TopDirectoryOnly) select file).Count();
+                    lblSourceNo.Text = filecount.ToString();
+                    monthCalendar1.Enabled = true;
+                }
+            }
+            catch (DirectoryNotFoundException)
+            {
+                MessageBox.Show("Path does not exists", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
             }
         }
 
         //Get the destination file count in folder
         private void txtDestination_TextChanged(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(txtDestination.Text))
-                targetPath = null;
-            else
+            try
             {
-                targetPath = txtDestination.Text;
-                targetcount = (from file in Directory.EnumerateFiles(targetPath, "*", SearchOption.TopDirectoryOnly) select file).Count();
-                lblDestNo.Text = targetcount.ToString();
+                if (string.IsNullOrEmpty(txtDestination.Text))
+                    targetPath = null;
+                else
+                {
+                    targetPath = txtDestination.Text;
+                    targetcount = (from file in Directory.EnumerateFiles(targetPath, "*", SearchOption.TopDirectoryOnly) select file).Count();
+                    lblDestNo.Text = targetcount.ToString();
+                }
+            }
+            catch (DirectoryNotFoundException)
+            {
+                MessageBox.Show("Path does not exists", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
             }
         }
     }
