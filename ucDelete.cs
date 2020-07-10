@@ -135,6 +135,13 @@ namespace FileArrangement
         {
             try
             {
+                //Verify if the source and destination text boxes are null or empty
+                if (string.IsNullOrEmpty(txtSource.Text))
+                {
+                    MessageBox.Show("Source path can't be empty", "Message", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
                 //Verify if the source count is greater than zero, if not throw an error.
                 if (lblSourceNo.Text == Convert.ToString(0))
                 {
