@@ -192,7 +192,7 @@ namespace FileArrangement
                                 copiedFiles = j;
 
                             //Update the status bar
-                            Thread.Sleep(4000);
+                            Thread.Sleep(10);
                             if (progressCallback != null) progressCallback.Report(j * 100 / fcount);
                         }
                         if ((j * 100 / fcount) == 100) MessageBox.Show(fcount + " file(s) successfully deleted!", "Message", MessageBoxButtons.OK, MessageBoxIcon.Information);
